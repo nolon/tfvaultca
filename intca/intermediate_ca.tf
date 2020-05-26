@@ -2,8 +2,8 @@
 resource "vault_mount" "pki_int" {
     type = "pki"
     path = "pki-int-ca"
-    default_lease_ttl = 43800h
-    max_lease_ttl = 43800h
+    default_lease_ttl_seconds = 2628000
+    max_lease_ttl_seconds = 2628000
     description = "Intermediate Authority for ${var.server_cert_domain}"
 }
 #

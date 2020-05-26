@@ -1,0 +1,30 @@
+{
+  "request_id": "325ff351-9a24-5d79-f977-e6cf12918a58",
+  "lease_id": "",
+  "lease_duration": 0,
+  "renewable": false,
+  "data": null,
+  "warnings": null,
+  "auth": {
+    "client_token": "s.7JXwLnsIhyXsEkAZ1vKrzo3I",
+    "accessor": "UKQvkd18Nk7wz2xA1Gkjhuna",
+    "policies": [
+      "default",
+      "terraform-token-create",
+      "tf-roleid-get"
+    ],
+    "token_policies": [
+      "default",
+      "terraform-token-create",
+      "tf-roleid-get"
+    ],
+    "identity_policies": null,
+    "metadata": {
+      "user": "terraform-user"
+    },
+    "orphan": false,
+    "entity_id": "",
+    "lease_duration": 2764800,
+    "renewable": true
+  }
+}

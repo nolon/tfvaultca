@@ -2,8 +2,8 @@
 resource "vault_mount" "pki_int" {
     type = "pki"
     path = "pki-int-ca"
-    default_lease_ttl = 43800h
-    max_lease_ttl = 43800h
+    default_lease_ttl_seconds = 2628000
+    max_lease_ttl_seconds = 2628000
     description = "Intermediate Authority for ${var.server_cert_domain}"
 }
 #
@@ -34,14 +34,14 @@ resource "vault_pki_secret_backend_intermediate_cert_request" "intermediate" {
 #
 # Have the Root CA Sign our CSR
 resource "vault_pki_secret_backend_root_sign_intermediate" "intermediate" {
-  depends_on = [ vault_pki_secret_backend_intermediate_cert_request.intermediate, vault_pki_secret_backend_config_ca.ca_config ]
+  depends_on = [ vault_pki_secret_backend_intermediate_cert_request.intermediate ]
   backend = vault_mount.root.path
 
   csr = vault_pki_secret_backend_intermediate_cert_request.intermediate.csr
   common_name = "${var.server_cert_domain} Intermediate Certificate"
   exclude_cn_from_sans = true
   ou = "NNI"
-  organization = "swisscom.com"
+  organization = "example.com"
   # Note that I am asking for 8 years here, since the vault_mount.root has a max_lease_ttl of 5 years
   # this 8 year request is shortened to 5.
   ttl = 252288000 #8 years
@@ -65,14 +65,10 @@ resource local_file signed_intermediate {
 # chained_ca output of a generated cert will only be 
 # the intermediate cert and not the whole chain.
 resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate" { 
+ depends_on = [ "vault_pki_secret_backend_root_sign_intermediate.intermediate" ]
  backend = vault_mount.pki_int.path
 
- certificate = "${vault_pki_secret_backend_root_sign_intermediate.intermediate.certificate}\n${vault_pki_secret_backend_root_cert.ca-certificate}"
-}
-
-# Terraform outputs if you want to do something more with these certs in terraform.
-output "ca_cert_chain"  {
-    value = vault_pki_secret_backend_root_sign_intermediate.intermediate.ca_chain
+ certificate = "vault_pki_secret_backend_root_sign_intermediate.intermediate.certificate"
 }
 
 output "intermediate_ca" {
