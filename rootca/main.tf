@@ -74,7 +74,18 @@ resource "vault_policy" "terraform_token_create" {
 EOT
 }
 
+module "ecp-silver-auth" {
+  source = "./modules/kubernetes-auth"
+  kubernetes_host = "api.ecp-silver.swisscom.com"
+  kubernetes_ca_cert = var.kubernetes_ca_cert
+  token_reviewer_jwt = var.token_reviewer_jwt
+  k8s_path           = "ecp-silver"
+}
 
+
+module "ansible" {
+  source = "./modules/ansible"
+}
 
 
 module "rootca" {
@@ -84,14 +95,16 @@ module "rootca" {
 }
 
 
-#module "ecp-stage" {
-#  source = "./modules/int"
-#  vault_mount_root   = var.vault_mount_root
-#  pki_path           = "ecp-stage"
-#  server_cert_domain = "ecp-stage.ecp.sshz.pw"
-#  organization       = "Netset GmbH"
-#  ou                 = "NNI"
-#}
+module "ecp-stage" {
+  source = "./modules/int"
+  vault_mount_root   = var.vault_mount_root
+  pki_path           = "ecp-stage"
+  server_cert_domain = "ecp-stage.ecp.sshz.pw"
+  organization       = "Netset GmbH"
+  ou                 = "NNI"
+  cert_ttl           = "7200"
+}
+
 #
 #module "safe-stage" {
 #  source = "./modules/int"
